@@ -32,6 +32,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".CameraActivity"
+            android:theme="@style/CameraTheme"
             android:screenOrientation="portrait"/>
     </application>
 

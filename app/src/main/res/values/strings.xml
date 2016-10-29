@@ -4,4 +4,6 @@
     <!--Strings for MainActivity-->
     <string name="home_screen_fab_description">Open camera</string>
     <string name="camera_permission_denied">Cannot take Pictures without camera</string>
+    <string name="camera_screen_fab_description">Capture picture</string>
+    <string name="writing_permission_denied">Cannot save picture without permission</string>
 </resources>

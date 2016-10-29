@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                             getString(R.string.camera_permission_denied),
                             Snackbar.LENGTH_INDEFINITE).show();
                 }
+                break;
             }
             default:
                 Log.v(LOG_TAG, "Unknown permission requested");

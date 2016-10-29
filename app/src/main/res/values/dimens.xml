@@ -5,4 +5,6 @@
     <dimen name="home_screen_fab_margin">16dp</dimen>
     <dimen name="home_screen_fab_pressed_elevation">12dp</dimen>
     <dimen name="home_screen_fab_elevation">6dp</dimen>
+    <dimen name="camera_screen_capture_button_padding">16dp</dimen>
+    <dimen name="camera_preview_padding">100dp</dimen>
 </resources>

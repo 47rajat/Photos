@@ -108,6 +108,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         } else {  // back-facing
             result = (info.orientation - degrees + 360) % 360;
         }
+        Log.v(LOG_TAG, result + "");
         camera.setDisplayOrientation(result);
     }
 }
