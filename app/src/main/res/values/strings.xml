@@ -1,7 +1,11 @@
 <resources>
-    <string name="app_name">Photos</string>
+    <string name="app_name" translatable="false">Photos</string>
+    <string name="kinvey_app_id" translatable="false">kid_B1oYymXxl</string>
+    <string name="kinvey_app_secret" translatable="false">5e195fb405da4bc9a635c25c98a96e47</string>
 
     <!--Strings for MainActivity-->
+    <string name="home_screen_image_tab">Images</string>
+    <string name="home_screen_video_tab">Videos</string>
     <string name="home_screen_fab_description">Open camera</string>
     <string name="camera_permission_denied">Cannot take Pictures without camera</string>
     <string name="camera_screen_fab_description">Capture picture</string>
