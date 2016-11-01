@@ -13,15 +13,22 @@
         android:layout_height="match_parent"
         android:id="@+id/camera_preview"/>
 
+    <ImageButton
+        android:id="@+id/switch_camera"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_switch_camera_black_24dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="@dimen/camera_screen_camera_switch_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/capture_image"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:src="@drawable/ic_camera_alt_black_24dp"
-        android:layout_gravity="end|center"
+        android:layout_gravity="bottom|center"
         android:layout_marginBottom="@dimen/camera_screen_capture_button_padding"
         app:fabSize="auto"
-        app:pressedTranslationZ="@dimen/home_screen_fab_pressed_elevation"
-        app:elevation="@dimen/home_screen_fab_elevation"
         android:contentDescription="@string/camera_screen_fab_description"/>
 </android.support.design.widget.CoordinatorLayout>

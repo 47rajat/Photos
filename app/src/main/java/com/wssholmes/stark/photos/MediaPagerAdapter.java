@@ -10,6 +10,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 public class MediaPagerAdapter extends FragmentPagerAdapter {
 
     private final int PAGE_TOTAL = 2;
+
+    //TODO: Find a better (conforming to a11y) way to get these values.
     private static final String[] TAB_TITLES = new String[] {"IMAGES", "VIDEOS"};
 
     public MediaPagerAdapter(FragmentManager fm) {

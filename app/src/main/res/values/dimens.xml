@@ -7,4 +7,9 @@
     <dimen name="home_screen_fab_elevation">6dp</dimen>
     <dimen name="camera_screen_capture_button_padding">16dp</dimen>
     <dimen name="camera_preview_padding">100dp</dimen>
+    <dimen name="image_gallery_card_margin">4dp</dimen>
+    <dimen name="image_gallery_item_height">150dp</dimen>
+    <dimen name="image_gallery_item_width">150dp</dimen>
+    <dimen name="image_gallery_horizontal_margin">2dp</dimen>
+    <dimen name="camera_screen_camera_switch_margin">32dp</dimen>
 </resources>

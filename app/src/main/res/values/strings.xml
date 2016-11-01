@@ -10,4 +10,6 @@
     <string name="camera_permission_denied">Cannot take Pictures without camera</string>
     <string name="camera_screen_fab_description">Capture picture</string>
     <string name="writing_permission_denied">Cannot save picture without permission</string>
+    <string name="image_gallery_empty_view">Take some photos!</string>
+    <string name="reading_permission_denied">Need permission to load your images</string>
 </resources>

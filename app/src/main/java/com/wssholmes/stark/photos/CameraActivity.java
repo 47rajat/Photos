@@ -1,6 +1,7 @@
 package com.wssholmes.stark.photos;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -17,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.widget.ImageButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,15 +35,15 @@ public class CameraActivity extends AppCompatActivity {
     private final int MY_APP_WRITING_PERMISSION = 0;
 
     //TODO find a better way to get this string value
-    private static final String MY_APP_NAME = "Photos";
+    public static final String MY_APP_NAME = "Photos";
 
-    private static final int CAMERA_ID_BACK = 0;
-    private static final int CAMERA_ID_FRONT = 1;
+    private static int CAMERA_ID = 0;
 
     private Camera mCamera;
     private CameraPreview mCameraPreview;
     private CoordinatorLayout mPreview;
     private CoordinatorLayout mCameraScreen;
+    private ImageButton mCameraSwitchButton;
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -49,16 +51,21 @@ public class CameraActivity extends AppCompatActivity {
     private Camera.PictureCallback mPicture = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] bytes, Camera camera) {
-
+            Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             File pictureFile = getOutputMediaFile(MEDIA_TYPE_IMAGE);
             if(pictureFile == null){
                 Log.d(LOG_TAG, "Error creating media file, check storage permissions");
             }
 
             try {
+                //Code to allow system media scanner to add the image to the Media Provider's database.
+                Uri contentUri = Uri.fromFile(pictureFile);
+                mediaScanIntent.setData(contentUri);
+                CameraActivity.this.sendBroadcast(mediaScanIntent);
                 FileOutputStream fileOutputStream = new FileOutputStream(pictureFile);
                 fileOutputStream.write(bytes);
                 fileOutputStream.close();
+
             } catch (FileNotFoundException e){
                 Log.d(LOG_TAG, "File not found: " + e.getMessage());
             } catch (IOException e){
@@ -76,13 +83,17 @@ public class CameraActivity extends AppCompatActivity {
         mCameraScreen = (CoordinatorLayout) findViewById(R.id.camera_screen);
         mPreview = (CoordinatorLayout) findViewById(R.id.camera_preview);
 
+        final FloatingActionButton captureButton = (FloatingActionButton) findViewById(R.id.capture_image);
+        mCameraSwitchButton = (ImageButton) findViewById(R.id.switch_camera);
+
+
         mChangeCameraOrientation = new OrientationEventListener(this) {
             @Override
             public void onOrientationChanged(int orientation) {
                 if (orientation == ORIENTATION_UNKNOWN) return;
                 android.hardware.Camera.CameraInfo info =
                         new android.hardware.Camera.CameraInfo();
-                android.hardware.Camera.getCameraInfo(CAMERA_ID_BACK, info);
+                android.hardware.Camera.getCameraInfo(CAMERA_ID, info);
                 orientation = (orientation + 45) / 90 * 90;
                 int rotation = 0;
                 if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
@@ -90,28 +101,46 @@ public class CameraActivity extends AppCompatActivity {
                 } else {  // back-facing camera
                     rotation = (info.orientation + orientation) % 360;
                 }
-//                Log.v(LOG_TAG, "rotation set: " + rotation);
+//                Log.v(LOG_TAG, "rotation set: " + orientation);
                 Camera.Parameters parameters = mCamera.getParameters();
                 parameters.setRotation(rotation);
                 mCamera.setParameters(parameters);
+                int viewRotation;
+                switch (orientation){
+                    case 0:
+                        viewRotation = 0;
+                        break;
+                    case 360:
+                        viewRotation = 0;
+                        break;
+                    case 90:
+                        viewRotation = 270;
+                        break;
+                    case 270:
+                        viewRotation = 90;
+                        break;
+                    default:
+                        viewRotation = 0;
+                }
+                mCameraSwitchButton.setRotation(viewRotation);
+                captureButton.setRotation(viewRotation);
             }
         };
 
-        FloatingActionButton captureButton = (FloatingActionButton) findViewById(R.id.capture_image);
-
+        mCameraSwitchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CAMERA_ID = 1 - CAMERA_ID;
+                onPause();
+                onResume();
+            }
+        });
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 checkWritingPermission();
             }
         });
-
-        //Create an instance of camera
-//        mCamera = getCameraInstance();
-//        if (mCamera != null) {
-//            mCameraPreview = new CameraPreview(this, mCamera);
-//            mPreview.addView(mCameraPreview);
-//        }
 
 
     }
@@ -154,7 +183,7 @@ public class CameraActivity extends AppCompatActivity {
         //Always use this to prevent app from crashing if camera doesn't exists.
         try {
             //trying to get a Camera Instance.
-            camera = Camera.open(CAMERA_ID_BACK);
+            camera = Camera.open(CAMERA_ID);
         } catch (Exception e){
             Log.v(LOG_TAG, "camera is not available");
         }
@@ -169,12 +198,12 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     /** Create a file Uri for saving an image or video */
-    private static Uri getOutputMediaFileUri(int type){
+    public static Uri getOutputMediaFileUri(int type){
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
     /** Create a File for saving an image or video */
-    private static File getOutputMediaFile(int type){
+    public static File getOutputMediaFile(int type){
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
         if(!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
