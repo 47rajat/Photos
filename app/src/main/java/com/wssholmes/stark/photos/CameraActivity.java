@@ -20,7 +20,12 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.ImageButton;
 
+import com.kinvey.android.Client;
+import com.kinvey.java.LinkedResources.LinkedFile;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -45,6 +50,13 @@ public class CameraActivity extends AppCompatActivity {
     private CoordinatorLayout mCameraScreen;
     private ImageButton mCameraSwitchButton;
 
+    private Client mKinveyClient;
+
+    public static final String MY_COLLECTION = "MyCollection";
+    public static final String IMAGE_ENTITY_ID = "ImagesEntityId";
+
+    private ImageLinkedEntity mImageLinkedEntity = new ImageLinkedEntity(IMAGE_ENTITY_ID);
+
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
 
@@ -65,6 +77,7 @@ public class CameraActivity extends AppCompatActivity {
                 FileOutputStream fileOutputStream = new FileOutputStream(pictureFile);
                 fileOutputStream.write(bytes);
                 fileOutputStream.close();
+                uploadImage(pictureFile);
 
             } catch (FileNotFoundException e){
                 Log.d(LOG_TAG, "File not found: " + e.getMessage());
@@ -80,6 +93,12 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+
+        //Kinvey client object to do all sorts of kinvey stuff.
+        mKinveyClient = new Client.Builder(this.getApplicationContext()).build();
+        mKinveyClient.linkedData(MY_COLLECTION, ImageLinkedEntity.class).save(mImageLinkedEntity,null,null);
+
+
         mCameraScreen = (CoordinatorLayout) findViewById(R.id.camera_screen);
         mPreview = (CoordinatorLayout) findViewById(R.id.camera_preview);
 
@@ -268,6 +287,42 @@ public class CameraActivity extends AppCompatActivity {
 
         mCameraPreview = new CameraPreview(this, mCamera);
         mPreview.addView(mCameraPreview);
+    }
+
+    private void uploadImage(File pictureFile){
+        byte[] imageBytes = getBytes(pictureFile);
+        mImageLinkedEntity.putFile(pictureFile.getName(), new LinkedFile(pictureFile.getName()));
+        mImageLinkedEntity.getFile(pictureFile.getName()).setInput(new ByteArrayInputStream(imageBytes));
+    }
+
+    byte[] getBytes (File file)
+    {
+        FileInputStream input = null;
+        if (file.exists()) try
+        {
+            input = new FileInputStream (file);
+            int len = (int) file.length();
+            byte[] data = new byte[len];
+            int count, total = 0;
+            while ((count = input.read (data, total, len - total)) > 0) total += count;
+            return data;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        finally
+        {
+            if (input != null) try
+            {
+                input.close();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return null;
     }
 
     @Override
