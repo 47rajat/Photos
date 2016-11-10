@@ -20,12 +20,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.ImageButton;
 
-import com.kinvey.android.Client;
-import com.kinvey.java.LinkedResources.LinkedFile;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,13 +44,7 @@ public class CameraActivity extends AppCompatActivity {
     private CoordinatorLayout mPreview;
     private CoordinatorLayout mCameraScreen;
     private ImageButton mCameraSwitchButton;
-
-    private Client mKinveyClient;
-
-    public static final String MY_COLLECTION = "MyCollection";
-    public static final String IMAGE_ENTITY_ID = "ImagesEntityId";
-
-    private ImageLinkedEntity mImageLinkedEntity = new ImageLinkedEntity(IMAGE_ENTITY_ID);
+    private FloatingActionButton mCaptureButton;
 
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -77,7 +66,6 @@ public class CameraActivity extends AppCompatActivity {
                 FileOutputStream fileOutputStream = new FileOutputStream(pictureFile);
                 fileOutputStream.write(bytes);
                 fileOutputStream.close();
-                uploadImage(pictureFile);
 
             } catch (FileNotFoundException e){
                 Log.d(LOG_TAG, "File not found: " + e.getMessage());
@@ -94,16 +82,25 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
 
-        //Kinvey client object to do all sorts of kinvey stuff.
-        mKinveyClient = new Client.Builder(this.getApplicationContext()).build();
-        mKinveyClient.linkedData(MY_COLLECTION, ImageLinkedEntity.class).save(mImageLinkedEntity,null,null);
-
-
         mCameraScreen = (CoordinatorLayout) findViewById(R.id.camera_screen);
         mPreview = (CoordinatorLayout) findViewById(R.id.camera_preview);
-
-        final FloatingActionButton captureButton = (FloatingActionButton) findViewById(R.id.capture_image);
+        mCaptureButton = (FloatingActionButton) findViewById(R.id.capture_image);
         mCameraSwitchButton = (ImageButton) findViewById(R.id.switch_camera);
+
+        mCameraSwitchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CAMERA_ID = 1 - CAMERA_ID;
+                onPause();
+                onResume();
+            }
+        });
+        mCaptureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                checkWritingPermission();
+            }
+        });
 
 
         mChangeCameraOrientation = new OrientationEventListener(this) {
@@ -142,24 +139,9 @@ public class CameraActivity extends AppCompatActivity {
                         viewRotation = 0;
                 }
                 mCameraSwitchButton.setRotation(viewRotation);
-                captureButton.setRotation(viewRotation);
+                mCaptureButton.setRotation(viewRotation);
             }
         };
-
-        mCameraSwitchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CAMERA_ID = 1 - CAMERA_ID;
-                onPause();
-                onResume();
-            }
-        });
-        captureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                checkWritingPermission();
-            }
-        });
 
 
     }
@@ -264,9 +246,6 @@ public class CameraActivity extends AppCompatActivity {
         //Create an instance of camera
         mCamera = getCameraInstance();
 
-        mChangeCameraOrientation.enable();
-
-
         // set Camera parameters
         Camera.Parameters params = mCamera.getParameters();
 
@@ -285,49 +264,18 @@ public class CameraActivity extends AppCompatActivity {
         mCamera.setParameters(params);
 
 
+
         mCameraPreview = new CameraPreview(this, mCamera);
+        mCameraPreview.setZOrderOnTop(false);
         mPreview.addView(mCameraPreview);
-    }
-
-    private void uploadImage(File pictureFile){
-        byte[] imageBytes = getBytes(pictureFile);
-        mImageLinkedEntity.putFile(pictureFile.getName(), new LinkedFile(pictureFile.getName()));
-        mImageLinkedEntity.getFile(pictureFile.getName()).setInput(new ByteArrayInputStream(imageBytes));
-    }
-
-    byte[] getBytes (File file)
-    {
-        FileInputStream input = null;
-        if (file.exists()) try
-        {
-            input = new FileInputStream (file);
-            int len = (int) file.length();
-            byte[] data = new byte[len];
-            int count, total = 0;
-            while ((count = input.read (data, total, len - total)) > 0) total += count;
-            return data;
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-        finally
-        {
-            if (input != null) try
-            {
-                input.close();
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-        return null;
+        mChangeCameraOrientation.enable();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        mCaptureButton.setRotation(0);
+        mCameraSwitchButton.setRotation(0);
         mChangeCameraOrientation.disable();
         releaseCamera();
     }

@@ -12,7 +12,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.GridLayoutManager;
@@ -94,8 +93,7 @@ public class ImageGalleryFragment extends android.support.v4.app.Fragment implem
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.CAMERA},
+            requestPermissions(new String[]{Manifest.permission.CAMERA},
                     MY_PERMISSION_REQUEST_CAMERA);
         } else {
             startActivity(mIntentOpenCamera);
@@ -105,18 +103,17 @@ public class ImageGalleryFragment extends android.support.v4.app.Fragment implem
     void checkReadingPermission(){
         if(ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSION_REQUEST_READ_IMAGES);
         } else {
             getLoaderManager().initLoader(IMAGE_GALLERY_CURSOR_ID, null, this);
         }
     }
 
-
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.v(LOG_TAG, "this was called");
         switch (requestCode) {
             case MY_PERMISSION_REQUEST_CAMERA: {
                 // If request is cancelled, the result arrays are empty.
