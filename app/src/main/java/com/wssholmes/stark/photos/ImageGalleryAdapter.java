@@ -1,6 +1,8 @@
 package com.wssholmes.stark.photos;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,7 +20,9 @@ import java.io.File;
 
 public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapter.ImageGalleryViewHolder> {
 
-    public static final String LOG_TAG = ImageGalleryAdapter.class.getSimpleName();
+    private static final String LOG_TAG = ImageGalleryAdapter.class.getSimpleName();
+    public static final String TOTAL_IMAGES_KEY = "Total number of images";
+    public static final String CURRENT_IMAGE_POSITION_KEY = "Current image position key";
 
     private Cursor mCursor;
     private final Context mContext;
@@ -69,6 +73,15 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
             super(itemView);
 
             mImageView = (ImageView) itemView.findViewById(R.id.single_photo);
+            mImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent((Activity)mContext, FullScreenImageActivity.class);
+                    intent.putExtra(TOTAL_IMAGES_KEY, mCursor.getCount());
+                    intent.putExtra(CURRENT_IMAGE_POSITION_KEY, getAdapterPosition());
+                    mContext.startActivity(intent);
+                }
+            });
         }
     }
 

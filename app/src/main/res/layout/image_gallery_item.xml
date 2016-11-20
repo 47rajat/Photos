@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_margin="@dimen/image_gallery_card_margin"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/grid_view_image_height">
 
     <ImageView
         android:id="@+id/single_photo"

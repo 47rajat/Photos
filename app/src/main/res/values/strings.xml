@@ -12,4 +12,8 @@
     <string name="writing_permission_denied">Cannot save picture without permission</string>
     <string name="image_gallery_empty_view">Take some photos!</string>
     <string name="reading_permission_denied">Need permission to load your images</string>
+
+    <string name="title_activity_fullscreen_image">FullscreenIMageActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

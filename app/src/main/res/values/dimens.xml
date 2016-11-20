@@ -12,4 +12,5 @@
     <dimen name="image_gallery_item_width">150dp</dimen>
     <dimen name="image_gallery_horizontal_margin">2dp</dimen>
     <dimen name="camera_screen_camera_switch_margin">32dp</dimen>
+    <dimen name="grid_view_image_height">300dp</dimen>
 </resources>
